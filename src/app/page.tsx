@@ -1,31 +1,19 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+// import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+        {ButtonAppBar()}
       </div>
 
       <div className={styles.center}>
@@ -92,4 +80,29 @@ export default function Home() {
       </div>
     </main>
   )
+}
+
+
+function ButtonAppBar() {
+  return (
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static" sx={{color:'black'}} >
+          <Toolbar>
+            <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+            >
+              {/*<MenuIcon />*/}
+            </IconButton>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              ChainTrack
+            </Typography>
+            <Button color="inherit">Connect</Button>
+          </Toolbar>
+        </AppBar>
+      </Box>
+  );
 }
