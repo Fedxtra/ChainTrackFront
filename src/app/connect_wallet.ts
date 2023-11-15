@@ -8,7 +8,7 @@ const lukso = luksoModule();
 const injected = injectedModule({
     custom: [lukso],
     sort: (wallets) => {
-        const sorted = wallets.reduce<any[]>((sorted, wallet) => {
+        return wallets.reduce<any[]>((sorted, wallet) => {
             if (wallet.label === "Universal Profiles") {
                 sorted.unshift(wallet);
             } else {
@@ -16,7 +16,6 @@ const injected = injectedModule({
             }
             return sorted;
         }, []);
-        return sorted;
     },
     displayUnavailable: ["Universal Profiles"],
 });
@@ -39,10 +38,10 @@ const chains = [
 const LOGO = `<svg></svg>`;
 
 const appMetadata = {
-    name: "LUKSO Test dApp",
+    name: "ChainTrack",
     icon: LOGO,
     logo: LOGO,
-    description: "My test dApp using Web3 Onboard",
+    description: "Transaction Tracker and Analyser",
     recommendedInjectedWallets: [
         {
             name: "Universal Profiles",
