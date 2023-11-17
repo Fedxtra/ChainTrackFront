@@ -1,0 +1,9 @@
+.MuiButtonBase-root.logo-navigation-button {
+    box-shadow: none;
+    background-color: transparent;
+
+    &:hover {
+        box-shadow: none;
+        background-color: inherit;
+    }
+}

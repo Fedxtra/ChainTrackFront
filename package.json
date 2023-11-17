@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@erc725/erc725.js": "^0.21.2",
     "@lukso/web3-onboard-config": "^1.0.3",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.17",
@@ -18,7 +19,8 @@
     "@web3-onboard/injected-wallets": "^2.10.9",
     "next": "14.0.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "web3": "^4.2.2"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -26,6 +28,8 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.0.2",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "typescript": "^5"
   }
 }
