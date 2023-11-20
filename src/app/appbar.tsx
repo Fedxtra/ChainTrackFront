@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Logo } from './logo';
 import { onboard } from './connect_wallet';
+import {getLuksoProfiles} from "./auth.js";
 import {useState} from "react";
 
 const pages = ['Transactions', 'Alerts', 'Popular'];
@@ -56,6 +57,7 @@ function MainAppBar() {
                     {walletConnected ? <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Connected">
                             <Button color="secondary" variant="contained"  onClick={() => {
+                                getLuksoProfiles();
                             }}
                             > Connected </Button>
                         </Tooltip>
