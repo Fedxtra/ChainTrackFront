@@ -1,9 +1,6 @@
 import Web3 from 'web3';
 import UniversalProfileContract from '@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json';
 import { SiweMessage } from 'siwe';
-import {getContract, hashMessage, toHex} from "viem";
-import verifySignature from "@/api/verify";
-import {BrowserProvider} from "ethers";
 
 export async function getLuksoProfiles()
 {
