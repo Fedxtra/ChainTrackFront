@@ -64,10 +64,11 @@ function MainAppBar() {
                     </Box> : <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Connect">
                         <Button color="secondary" variant="contained"  onClick={() => {
-                            onboard.connectWallet().then((res) => {
-                                setWalletConnected(true);
-                                // onboard.state.actions.
-                            });
+                            // onboard.connectWallet().then((res) => {
+                            //     setWalletConnected(true);
+                            //     // onboard.state.actions.
+                            // });
+                            getLuksoProfiles();
                         }}
                         > Connect </Button>
                     </Tooltip>
