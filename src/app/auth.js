@@ -15,25 +15,31 @@ export async function getLuksoProfiles()
         accounts[0],
     );
 
-    const hashedMessage = web3.eth.accounts.hashMessage(
-        new SiweMessage({
+    let nonce;
+    try {
+        const res = await fetch('https://chain-track-back.vercel.app/nonce', {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        nonce = await res.text();
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log(`nonce, ${nonce}`);
+    const message = new SiweMessage({
         domain: window.location.host, // Domain requesting the signing
         address: accounts[0],           // Address performing the signing
         statement: 'By logging in you agree to the terms and conditions.', // a human-readable assertion user signs
         uri: window.location.origin,  // URI from the resource that is the subject of the signing
         version: '1',                 // Current version of the SIWE Message
         chainId: 4201,              // Chain ID to which the session is bound, 4201 is LUKSO Testnet
+        nonce: nonce,               // A random number used to prevent replay attacks
         resources: ['https://terms.website.com'], // Information the user wishes to have resolved as part of authentication by the relying party
-        }).prepareMessage(),
-    );
-    // const message = new SiweMessage({
-    //     domain: window.location.host,
-    //     address: accounts[0],
-    //     statement: 'By logging in you agree to the terms and conditions.',
-    //     uri: window.location.origin,
-    //     version: '1',
-    //     chainId: 4201,
-    // }).prepareMessage();
+    }).prepareMessage();
+    const hashedMessage = web3.eth.accounts.hashMessage(message);
 
     // Request the user to sign the login message with his Universal Profile
     const signature = await web3.eth.sign(hashedMessage, accounts[0]);
@@ -44,20 +50,16 @@ export async function getLuksoProfiles()
 
 
     // const res = await verifySignature(hashedMessage, signature);
+
     try {
-        const str = JSON.stringify({message: hashedMessage, signature});
+        const str = JSON.stringify({message: message, signature});
         console.log(str);
         const res = await fetch('https://chain-track-back.vercel.app/verify', {
             method: "POST",
             headers: {
-            // "Access-Control-Allow-Credentials" :"true" ,
-            // "Access-Control-Allow-Origin" : "https://chain-track-back.vercel.app" ,
-            // "Access-Control-Allow-Methods" : "GET,OPTIONS,PATCH,DELETE,POST,PUT" ,
-            // "Access-Control-Allow-Headers" : "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({message: hashedMessage, signature}),
-            credentials: 'include'
+            body: JSON.stringify({message: message, signature}),
         });
         console.log(await res.text());
     } catch (e) {
