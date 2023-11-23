@@ -1,4 +1,4 @@
-import Onboard from '@web3-onboard/core';
+import { init } from '@web3-onboard/react';
 import luksoModule from '@lukso/web3-onboard-config';
 import injectedModule from '@web3-onboard/injected-wallets';
 import { ConnectModalOptions } from '@web3-onboard/core/dist/types';
@@ -56,7 +56,7 @@ const connect: ConnectModalOptions = {
   removeWhereIsMyWalletWarning: true,
 };
 
-export const onboard = Onboard({
+export const onboard = init({
   wallets: [injected],
   chains,
   appMetadata,

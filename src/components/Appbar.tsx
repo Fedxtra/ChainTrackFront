@@ -19,6 +19,7 @@ import {
 } from '@/helper/routes';
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '@/components/ToggleTheme';
+import { getLuksoProfiles } from '@/app/auth';
 
 const pages = [
   {
@@ -86,7 +87,7 @@ export default function MainAppBar() {
                 <Button
                   color="secondary"
                   variant="contained"
-                  onClick={() => {}}
+                  onClick={() => getLuksoProfiles()}
                 >
                   {' '}
                   Connected{' '}
@@ -97,11 +98,7 @@ export default function MainAppBar() {
                 <Button
                   color="secondary"
                   variant="contained"
-                  onClick={() => {
-                    onboard.connectWallet().then(() => {
-                      setWalletConnected(true);
-                    });
-                  }}
+                  onClick={() => getLuksoProfiles()}
                 >
                   {' '}
                   Connect{' '}
