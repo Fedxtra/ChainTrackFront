@@ -2,6 +2,8 @@ import Web3 from 'web3';
 import UniversalProfileContract from '@lukso/lsp-smart-contracts/artifacts/UniversalProfile.json';
 import { SiweMessage } from 'siwe';
 import useWeb3Onboard from './useWeb3Onboard';
+import { ERC725 } from '@erc725/erc725.js';
+import lsp3ProfileSchema from '@erc725/erc725.js/schemas/LSP3ProfileMetadata.json' assert { type: 'json' };
 
 const web3Onboard = useWeb3Onboard();
 
@@ -103,5 +105,20 @@ export async function getLuksoProfiles()
     } else {
         console.log('Log In failed');
     }
+
+
+
+    const erc725js = new ERC725(lsp3ProfileSchema, '0x83849043074C286e5078679Eaed7F6585F80AB13', 'https://rpc.testnet.lukso.gateway.fm',
+        {
+            ipfsGateway: 'https://api.universalprofile.cloud/ipfs',
+        },
+    );
+
+    // Get all profile data keys of the smart contract
+    const profileData = await erc725js.getData();
+    console.log('profileData', profileData);
+
+    const profileMetaData = await erc725js.fetchData('LSP3Profile');
+    console.log('profileMetaData', profileMetaData);
 }
 
