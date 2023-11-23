@@ -44,7 +44,9 @@ const PopularPage = () => {
   const theme = useTheme();
 
   const getUserData = useCallback(async () => {
-    const data = await getProfileMetadata('');
+    const data = await getProfileMetadata(
+      '0x81C8fA3745Cec646C55e3dcfa5989707a7Ade03F',
+    );
     setCurrentUser(data);
   }, [setCurrentUser]);
 
