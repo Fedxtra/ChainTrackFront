@@ -4,8 +4,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getProfileMetadata } from '@/api';
 import { UserData } from '@/helper/types';
 import useThrowAsyncError from '@/helper/errorHandler';
-import { Tab, Tabs, Box, Paper, useTheme, Grid } from '@mui/material';
+import {Tab, Tabs, Box, Paper, useTheme, Grid, CircularProgress} from '@mui/material';
 import UserCard from '@/components/UserCard';
+import apiService, {RecurringTransaction} from "@/api/api";
+import TransactionCard from "@/components/TransactionCard";
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -39,20 +41,45 @@ function handleTabs(index: number) {
 const PopularPage = () => {
   const throwAsyncError = useThrowAsyncError();
   const [currentUser, setCurrentUser] = useState<UserData>();
-  const [popularUsers, setPopularUsers] = useState<UserData[]>();
+  const [popularUsers, setPopularUsers] = useState<UserData[]>([]);
+  const [popularTransactions, setPopularTransactions] = useState<RecurringTransaction[]>([]);
   const [tab, setTab] = React.useState(0);
   const theme = useTheme();
 
-  const getUserData = useCallback(async () => {
-    const data = await getProfileMetadata(
-      '0x81C8fA3745Cec646C55e3dcfa5989707a7Ade03F',
-    );
-    setCurrentUser(data);
-  }, [setCurrentUser]);
+  const loadUsersData = useCallback(async () => {
+    try {
+      const [newCurrentUserData, newPopularUsers] = await Promise.all([
+        apiService.readUser('1'),
+        apiService.readPopularUsers()
+      ]);
+      const currentUserWithMetadataPromise = getProfileMetadata(newCurrentUserData);
+      const popularUsersWithMetadataPromise = Promise.all(newPopularUsers.map((popularUser) => getProfileMetadata(popularUser)));
+      const [currentUserWithMetadata, popularUsersWithMetadata] = await Promise.all([
+        currentUserWithMetadataPromise,
+        popularUsersWithMetadataPromise
+      ]);
+      setCurrentUser(currentUserWithMetadata);
+      setPopularUsers(popularUsersWithMetadata ?? []);
+    } catch (err) {
+      throwAsyncError(err);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadTransactionsData = useCallback(async () => {
+    try {
+      const newPopularTransactions = await apiService.readPopularRecurringTransactions();
+      setPopularTransactions(newPopularTransactions);
+    } catch (err) {
+      throwAsyncError(err);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    getUserData().catch(throwAsyncError);
-  }, [getUserData]);
+    loadUsersData();
+    loadTransactionsData();
+  }, [loadUsersData, loadTransactionsData]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
@@ -87,12 +114,41 @@ const PopularPage = () => {
             </Box>
             <Box padding="12px 20px 20px 20px">
               <CustomTabPanel value={tab} index={0}>
-                <Box>
-                  <UserCard userData={currentUser} />
-                </Box>
+                {currentUser && !!popularUsers.length ? (
+                  <Box display="flex" gap="1.2rem" flexDirection="column">
+                    <Box>
+                      <UserCard userData={currentUser} />
+                    </Box>
+                    <Grid container spacing={2}>
+                      {popularUsers.map((popularUser) => (
+                        <Grid item xs={4} key={popularUser.id}>
+                          <UserCard userData={popularUser} />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                ) : (
+                  <Box display="flex" justifyContent="center">
+                    <CircularProgress />
+                  </Box>
+                )}
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={1}>
-                Item Two
+                {popularTransactions.length ? (
+                  <Box display="flex" gap="1.2rem" flexDirection="column">
+                    <Grid container spacing={2}>
+                      {popularTransactions.map((popularTransaction) => (
+                        <Grid item xs={4} key={JSON.stringify(popularTransaction)}>
+                          <TransactionCard popularTransaction={popularTransaction} />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                ) : (
+                  <Box display="flex" justifyContent="center">
+                    <CircularProgress />
+                  </Box>
+                )}
               </CustomTabPanel>
             </Box>
           </Box>

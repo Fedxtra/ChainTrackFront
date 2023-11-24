@@ -10,7 +10,7 @@ import { UserData } from '@/helper/types';
 import { Box, Grid } from '@mui/material';
 
 interface UserCardProps {
-  userData?: UserData;
+  userData: UserData;
 }
 
 const UserCard = ({ userData }: UserCardProps) => {
@@ -27,15 +27,15 @@ const UserCard = ({ userData }: UserCardProps) => {
         title={userData?.name || '-'}
       />
       <CardContent>
-        <Grid>
+        <Grid container flexDirection="column" gap="12px">
           <Box>
-            <Typography variant="body2" color="text.secondary">
-              Followers: {userData?.followers ?? 0}
+            <Typography variant="body1" color="text.secondary">
+              Followers: {userData?.followerCount ?? 0}
             </Typography>
           </Box>
           <Box>
-            <Typography variant="body2" color="text.secondary">
-              Monitors:
+            <Typography variant="body1" color="text.secondary">
+              Following: {userData?.followingCount ?? 0}
             </Typography>
           </Box>
         </Grid>

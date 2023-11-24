@@ -1,8 +1,6 @@
-export interface Monitor {}
+import {User} from "@/api/api";
 
-export interface UserData {
+export interface UserData extends User {
   profileImageUrl?: string;
   name: string;
-  followers?: number;
-  monitors?: Monitor[];
 }
