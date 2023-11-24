@@ -19,6 +19,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '@/components/ToggleTheme';
 import auth from '@/app/auth';
+import {getState, setState} from '@/helper/store';
 
 const pages = [
   {
@@ -44,6 +45,10 @@ export default function MainAppBar() {
     const address = await auth.connect();
     setWalletConnected(true);
     setAddress(address);
+    setState({
+      address: address,
+      connected: true
+    });
   }
 
   async function sign(){
@@ -54,6 +59,7 @@ export default function MainAppBar() {
         throw new Error('Address not set');
     }
     setWalletSigned(await auth.sign(address));
+    setState('signed', true);
   }
 
   return (
