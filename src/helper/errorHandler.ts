@@ -1,6 +1,8 @@
-import { setState } from '@/helper/store';
+import useStore from '@/helper/store';
 
 const useThrowAsyncError = () => {
+  const { setState } = useStore();
+
   return (error: any) =>
     setState({
       isError: true,

@@ -4,12 +4,12 @@ import React, { useMemo, useState } from 'react';
 import { Inter } from 'next/font/google';
 import MainAppBar from '@/components/Appbar';
 import './global.css';
-import { AppContext, initialAppContext } from '@/helper/errorHandler';
 import ErrorHandler from '@/components/ErrorHandler';
 import { Box, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { getThemePreference, Theme, ToggleThemeContext } from '@/helper/theme';
 import { setLocalStorage } from '@/helper/localStorage';
 import { blueGrey, brown, grey } from '@mui/material/colors';
+import {initialAppContext, AppContext} from "@/helper/store";
 
 const inter = Inter({ subsets: ['latin'] });
 

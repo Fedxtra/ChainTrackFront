@@ -19,7 +19,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '@/components/ToggleTheme';
 import auth from '@/app/auth';
-import {getState, setState} from '@/helper/store';
+import useStore from '@/helper/store';
 
 const pages = [
   {
@@ -36,6 +36,7 @@ const pages = [
 ];
 
 export default function MainAppBar() {
+  const { setState } = useStore();
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const [walletSigned, setWalletSigned] = useState<boolean>(false);
   const [address, setAddress] = useState<string|null>(null);

@@ -21,24 +21,23 @@ export const AppContext = createContext<AppContextProviderProps>({
   setAppContext: () => null,
 });
 
-export const setState = (key: string | object, value?: any) => {
-    if (typeof key === 'object') {
-        const { setAppContext } = useContext(AppContext);
+export const useStore = () => {
+  const { appContext, setAppContext } = useContext(AppContext);
+
+  return {
+    getState(key: keyof AppContextProps) {
+      if (!key) throw new Error('Key is required');
+      return appContext[key];
+    },
+    setState(key: string | object, value?: any) {
+      if (typeof key === 'object') {
         setAppContext((prev) => ({ ...prev, ...key }));
         return;
+      }
+      setAppContext((prev) => ({ ...prev, [key]: value }));
     }
-    const { setAppContext } = useContext(AppContext);
-    setAppContext((prev) => ({ ...prev, [key]: value }));
-}
-
-export const getState = (key: keyof AppContextProps) => {
-    if (!key) throw new Error('Key is required');
-    const { appContext } = useContext(AppContext);
-    return appContext[key];
+  };
 };
 
-export default {
-    setState,
-    getState
-}
+export default useStore;
 

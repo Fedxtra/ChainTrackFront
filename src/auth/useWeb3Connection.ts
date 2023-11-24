@@ -6,7 +6,6 @@ import {
 } from './config'
 import useWalletConnectV2 from './useWalletConnectV2'
 import useWeb3Onboard from './useWeb3Onboard'
-import { ref } from 'vue'
 import { TransactionConfig, TransactionReceipt } from 'web3-core'
 import { resetNetworkConfig, setNetworkConfig } from './config'
 import {useState} from "react";

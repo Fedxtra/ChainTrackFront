@@ -60,12 +60,7 @@ const PopularPage = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={2}>
-        <Box>
-          <UserCard userData={currentUser} />
-        </Box>
-      </Grid>
-      <Grid item xs={10}>
+      <Grid item xs={12}>
         <Paper
           elevation={3}
           sx={{
@@ -92,7 +87,9 @@ const PopularPage = () => {
             </Box>
             <Box padding="12px 20px 20px 20px">
               <CustomTabPanel value={tab} index={0}>
-                Item One
+                <Box>
+                  <UserCard userData={currentUser} />
+                </Box>
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={1}>
                 Item Two

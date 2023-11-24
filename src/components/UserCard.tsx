@@ -15,13 +15,7 @@ interface UserCardProps {
 
 const UserCard = ({ userData }: UserCardProps) => {
   return (
-    <Card
-      sx={{
-        boxShadow: 'none',
-        backgroundColor: 'transparent',
-        backgroundImage: 'none',
-      }}
-    >
+    <Card>
       <CardHeader
         avatar={
           <Avatar
