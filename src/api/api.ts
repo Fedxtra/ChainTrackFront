@@ -8,6 +8,7 @@ enum Preconditions {
     'MainnetBalance' = 'Mainnet Balance',
     'AlchemyAccount' = 'Alchemy Account',
     'ENS' = 'ENS',
+    'Twitter' = 'Twitter',
 }
 
 enum TransactionCategory {
@@ -18,22 +19,23 @@ enum TransactionCategory {
 }
 
 type RecurringTransaction = {
-    walletAddress: string;
+    address: string;
     isOutgoing: boolean; // incoming or outgoing
     chain: string;
-    amount: number;
+    amount: number|null;
     category: TransactionCategory;
-    date: Date;
-    confirmed: boolean;
-    transactionHash: string;
-    blockNumber: number;
-    isActive: boolean;
     name: string;
-    url: string;
+    url?: string;
+    icon?: string;
     interval: number; // hours? days? cron? random?
     startDate: Date | null;
     endDate: Date| null;
-    precondition: string;
+    preconditions: string[];
+}
+
+type UserRecurringTransaction = RecurringTransaction &{
+    isActive: boolean;
+    date: Date;
     lastTransactionAt: Date | null;
     notify: boolean;
     confirm: boolean;
@@ -80,35 +82,27 @@ class API {
     constructor() {}
 
     // Read Popular RecurringTransactions and Users
-    readPopularRecurringTransactions(): PopularRecurringTransactions {
+    async readPopularRecurringTransactions(): Promise<PopularRecurringTransactions> {
         return [{
-            walletAddress: '0x123',
-            isOutgoing: true,
+            address: '0x244c1844C667949c8634d933bfcD547235D87b2b',
+            isOutgoing: false,
             chain: '1',
-            amount: 0,
+            amount: null,
             category: TransactionCategory.Faucet,
-            date: new Date(),
-            confirmed: false,
-            transactionHash: '0x123',
-            blockNumber: 0,
-            isActive: false,
-            name: '',
-            url: '',
-            interval: 0,
+            name: 'TESTNET Authenticated Faucet',
+            url: 'https://faucet.testnet.lukso.network/',
+            interval: 24 * 60 * 60 * 1000,
             startDate: null,
             endDate: null,
-            precondition: Preconditions.BrightID,
-            lastTransactionAt: null,
-            notify: false,
-            confirm: false,
+            preconditions: ['Twitter']
         }];
     }
 
-    readPopularUsers(): PopularUsers {
+    async readPopularUsers(): Promise<PopularUsers> {
         return [{
             id: '0x123',
             walletAddress: '0x123',
-            followerCount: 0,
+            followerCount: 999,
             followingCount: 0,
             recurringTransactions: [],
             contacts: [],
@@ -117,7 +111,7 @@ class API {
     }
 
     // CRUD for Alerts, only read and update
-    readAlerts(): Alerts {
+    async readAlerts(): Promise<Alerts> {
         return [{
             transaction: '0x123',
             createdAt: new Date(),
@@ -126,12 +120,12 @@ class API {
         }];
     }
 
-    updateAlert(alert: Alert): Alert {
+    async updateAlert(alert: Alert): Promise<Alert> {
         return alert;
     }
 
     // CRUD for UserFollow
-    readUserFollows(): UserFollow[] {
+    async readUserFollows(): Promise<UserFollow[]> {
         return [{
             follower: '0x123',
             following: '0x124',
@@ -142,20 +136,20 @@ class API {
         }];
     }
 
-    updateUserFollow(userFollow: UserFollow): UserFollow {
+    async updateUserFollow(userFollow: UserFollow): Promise<UserFollow> {
         return userFollow;
     }
 
-    createUserFollow(userFollow: UserFollow): UserFollow {
+    async createUserFollow(userFollow: UserFollow): Promise<UserFollow> {
         return userFollow;
     }
 
-    deleteUserFollow(userFollow: UserFollow): UserFollow {
+    async deleteUserFollow(userFollow: UserFollow): Promise<UserFollow> {
         return userFollow;
     }
 
     // CRUD for User
-    readUser(id: string): User {
+    async readUser(id: string): Promise<User> {
         return {
             id,
             walletAddress: '0x123',
@@ -167,61 +161,58 @@ class API {
         };
     }
 
-    updateUser(user: User): User {
+    async updateUser(user: User): Promise<User> {
         return user;
     }
 
-    createUser(user: User): User {
+    async createUser(user: User): Promise<User> {
         return user;
     }
 
-    deleteUser(user: User): User {
+    async deleteUser(user: User): Promise<User> {
         return user;
     }
 
     // CRUD for recurring transactions
-    readRecurringTransactions(): RecurringTransaction[] {
+    async readRecurringTransactions(): Promise<UserRecurringTransaction[]> {
         return [{
-            walletAddress: '0x123',
+            address: '0x123',
             isOutgoing: true,
             chain: '1',
             amount: 0,
             category: TransactionCategory.Faucet,
             date: new Date(),
-            confirmed: false,
-            transactionHash: '0x123',
-            blockNumber: 0,
             isActive: false,
             name: '',
             url: '',
             interval: 0,
             startDate: null,
             endDate: null,
-            precondition: Preconditions.BrightID,
+            preconditions: [Preconditions.Twitter],
             lastTransactionAt: null,
             notify: false,
             confirm: false,
         }];
     }
 
-    createRecurringTransaction(recurringTransaction: RecurringTransaction): RecurringTransaction {
+    async createRecurringTransaction(recurringTransaction: UserRecurringTransaction): Promise<UserRecurringTransaction> {
         return recurringTransaction;
     }
 
-    updateRecurringTransaction(recurringTransaction: RecurringTransaction): RecurringTransaction {
+    async updateRecurringTransaction(recurringTransaction: UserRecurringTransaction): Promise<UserRecurringTransaction> {
         return recurringTransaction;
     }
 
-    deleteRecurringTransaction(recurringTransaction: RecurringTransaction): RecurringTransaction {
+    async deleteRecurringTransaction(recurringTransaction: UserRecurringTransaction): Promise<UserRecurringTransaction> {
         return recurringTransaction;
     }
 
     // CRUD for contacts
-    createContact(contact: Contact): Contact {
+    async createContact(contact: Contact): Promise<Contact> {
         return contact;
     }
 
-    readContacts(): Contact[] {
+    async readContacts(): Promise<Contact[]> {
         return [{
             isActive: false,
             name: 'Telegram',
@@ -229,11 +220,11 @@ class API {
         }];
     }
 
-    updateContact(contact: Contact): Contact {
+    async updateContact(contact: Contact): Promise<Contact> {
         return contact;
     }
 
-    deleteContact(contact: Contact): Contact {
+    async deleteContact(contact: Contact): Promise<Contact> {
         return contact;
     }
 
