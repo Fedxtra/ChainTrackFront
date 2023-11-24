@@ -15,6 +15,7 @@ enum TransactionCategory {
     'Faucet' = 'Faucet',
     'Bridge' = 'Bridge',
     'DEX' = 'DEX',
+    'CEX' = 'CEX',
     'DAPP' = 'DAPP',
 }
 
@@ -33,9 +34,11 @@ type RecurringTransaction = {
     preconditions: string[];
 }
 
-type UserRecurringTransaction = RecurringTransaction &{
+// many-to-many relationship between users and recurring transactions
+type UserRecurringTransaction = {
+    recurringTransactionId: string;
+    userId: string;
     isActive: boolean;
-    date: Date;
     lastTransactionAt: Date | null;
     notify: boolean;
     confirm: boolean;
@@ -54,6 +57,16 @@ type Alert = {
     confirmedAt: Date;
 }
 
+type User = {
+    id: string;
+    address: string;
+    followerCount: number;
+    followingCount: number;
+    recurringTransactions: string[];
+    contacts: string[];
+    alerts: string[];
+}
+
 type UserFollow = {
     follower: string;
     following: string;
@@ -61,16 +74,6 @@ type UserFollow = {
     updatedAt: Date;
     addNew: boolean;
     except: string[];
-}
-
-type User = {
-    id: string;
-    walletAddress: string;
-    followerCount: number;
-    followingCount: number;
-    recurringTransactions: string[];
-    contacts: string[];
-    alerts: string[];
 }
 
 type PopularUsers = User[];
@@ -101,7 +104,7 @@ class API {
     async readPopularUsers(): Promise<PopularUsers> {
         return [{
             id: '0x123',
-            walletAddress: '0x123',
+            address: '0x123',
             followerCount: 999,
             followingCount: 0,
             recurringTransactions: [],
@@ -152,7 +155,7 @@ class API {
     async readUser(id: string): Promise<User> {
         return {
             id,
-            walletAddress: '0x123',
+            address: '0x123',
             followerCount: 0,
             followingCount: 0,
             recurringTransactions: [],
@@ -176,19 +179,9 @@ class API {
     // CRUD for recurring transactions
     async readRecurringTransactions(): Promise<UserRecurringTransaction[]> {
         return [{
-            address: '0x123',
-            isOutgoing: true,
-            chain: '1',
-            amount: 0,
-            category: TransactionCategory.Faucet,
-            date: new Date(),
+            recurringTransactionId: '0x123',
+            userId: '0x123',
             isActive: false,
-            name: '',
-            url: '',
-            interval: 0,
-            startDate: null,
-            endDate: null,
-            preconditions: [Preconditions.Twitter],
             lastTransactionAt: null,
             notify: false,
             confirm: false,
