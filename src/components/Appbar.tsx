@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Logo } from './Logo';
-import { onboard } from '@/api/connect_wallet';
 import { useState } from 'react';
 import {
   ALERTS_ROUTE,
@@ -19,10 +18,13 @@ import {
 } from '@/helper/routes';
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '@/components/ToggleTheme';
-import { getLuksoProfiles } from '@/app/auth';
+import auth from '@/app/auth';
 
 const pages = [
   {
+    name: 'Popular',
+    link: POPULAR_ROUTE,
+  }, {
     name: 'Transactions',
     link: TRANSACTIONS_ROUTE,
   },
@@ -30,15 +32,29 @@ const pages = [
     name: 'Alerts',
     link: ALERTS_ROUTE,
   },
-  {
-    name: 'Popular',
-    link: POPULAR_ROUTE,
-  },
 ];
 
 export default function MainAppBar() {
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
+  const [walletSigned, setWalletSigned] = useState<boolean>(false);
+  const [address, setAddress] = useState<string|null>(null);
   const router = useRouter();
+
+  async function connect(){
+    const address = await auth.connect();
+    setWalletConnected(true);
+    setAddress(address);
+  }
+
+  async function sign(){
+    if (!walletConnected) {
+      throw new Error('Wallet not connected');
+    }
+    if (address === null) {
+        throw new Error('Address not set');
+    }
+    setWalletSigned(await auth.sign(address));
+  }
 
   return (
     <AppBar position="static">
@@ -82,15 +98,26 @@ export default function MainAppBar() {
 
           <Box sx={{ flexGrow: 0 }} display="flex" gap="12px">
             <ToggleTheme />
-            {walletConnected ? (
-              <Tooltip title="Connected">
+            {
+              walletSigned ? (
+                <Tooltip title="Signed">
+                  <Button
+                    color="secondary"
+                    variant="contained"
+                  >
+                    {' '}
+                    Signed{' '}
+                  </Button>
+                </Tooltip>
+              ) : (walletConnected ? (
+              <Tooltip title="Sign">
                 <Button
                   color="secondary"
                   variant="contained"
-                  onClick={() => getLuksoProfiles()}
+                  onClick={() => sign()}
                 >
                   {' '}
-                  Connected{' '}
+                  Sign{' '}
                 </Button>
               </Tooltip>
             ) : (
@@ -98,13 +125,13 @@ export default function MainAppBar() {
                 <Button
                   color="secondary"
                   variant="contained"
-                  onClick={() => getLuksoProfiles()}
+                  onClick={() => connect()}
                 >
                   {' '}
                   Connect{' '}
                 </Button>
               </Tooltip>
-            )}
+            ))}
           </Box>
         </Toolbar>
       </Box>

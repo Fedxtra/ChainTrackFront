@@ -33,7 +33,9 @@ const mapProfileMetadata = (profileMetadata: FetchDataOutput): UserData => {
 export const getProfileMetadata = async (
   address: string,
 ): Promise<UserData | undefined> => {
-  if (!address) return;
+  if (!address) {
+    throw new Error('No address');
+  }
 
   try {
     const myErc725 = new ERC725(
