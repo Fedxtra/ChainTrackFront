@@ -20,6 +20,7 @@ enum TransactionCategory {
 }
 
 export type RecurringTransaction = {
+  id: string;
   address: string;
   isOutgoing: boolean; // incoming or outgoing
   chain: string;
@@ -43,6 +44,8 @@ export type UserRecurringTransaction = {
   notify: boolean;
   confirm: boolean;
 }
+
+export type Transaction = Partial<UserRecurringTransaction & RecurringTransaction>;
 
 export type Contact = {
   isActive: boolean;
@@ -87,6 +90,7 @@ class API {
   // Read Popular RecurringTransactions and Users
   async readPopularRecurringTransactions(): Promise<PopularRecurringTransactions> {
     return [{
+      id: '1',
       address: '0x81C8fA3745Cec646C55e3dcfa5989707a7Ade03F',
       isOutgoing: false,
       chain: '1',
@@ -190,6 +194,23 @@ class API {
 
   async createRecurringTransaction(recurringTransaction: UserRecurringTransaction): Promise<UserRecurringTransaction> {
     return recurringTransaction;
+  }
+
+  async readRecurringTransaction(id: string): Promise<RecurringTransaction> {
+    return {
+      id,
+      address: '0x81C8fA3745Cec646C55e3dcfa5989707a7Ade03F',
+      isOutgoing: false,
+      chain: '1',
+      amount: null,
+      category: TransactionCategory.Faucet,
+      name: 'TESTNET Authenticated Faucet',
+      url: 'https://faucet.testnet.lukso.network/',
+      interval: 24 * 60 * 60 * 1000,
+      startDate: null,
+      endDate: null,
+      preconditions: ['Twitter']
+    };
   }
 
   async updateRecurringTransaction(recurringTransaction: UserRecurringTransaction): Promise<UserRecurringTransaction> {

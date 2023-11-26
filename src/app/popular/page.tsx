@@ -139,7 +139,7 @@ const PopularPage = () => {
                     <Grid container spacing={2}>
                       {popularTransactions.map((popularTransaction) => (
                         <Grid item xs={4} key={JSON.stringify(popularTransaction)}>
-                          <TransactionCard popularTransaction={popularTransaction} />
+                          <TransactionCard transaction={popularTransaction} />
                         </Grid>
                       ))}
                     </Grid>
