@@ -4,6 +4,7 @@ import { createContext } from 'react';
 export type Theme = 'dark' | 'light' | null;
 
 export const ToggleThemeContext = createContext({
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   toggleColorMode: () => {},
 });
 

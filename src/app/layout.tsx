@@ -9,7 +9,7 @@ import { Box, createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { getThemePreference, Theme, ToggleThemeContext } from '@/helper/theme';
 import { setLocalStorage } from '@/helper/localStorage';
 import { blueGrey, brown, grey } from '@mui/material/colors';
-import {initialAppContext, AppContext} from "@/helper/store";
+import { initialAppContext, AppContext } from '@/helper/store';
 
 const inter = Inter({ subsets: ['latin'] });
 

@@ -2,7 +2,11 @@ import React, { Dispatch, ReactElement, SetStateAction } from 'react';
 import { Alert, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import {AppContext, AppContextProps, AppContextProviderProps} from "@/helper/store";
+import {
+  AppContext,
+  AppContextProps,
+  AppContextProviderProps,
+} from '@/helper/store';
 
 type ErrorBoundaryState = {
   hasError: boolean;

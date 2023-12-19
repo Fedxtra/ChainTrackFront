@@ -1,27 +1,27 @@
-import Onboard, { OnboardAPI } from '@web3-onboard/core'
-import injectedModule from '@web3-onboard/injected-wallets'
-import luksoModule from '@lukso/web3-onboard-config'
-import { ConnectModalOptions } from '@web3-onboard/core/dist/types'
+import Onboard, { OnboardAPI } from '@web3-onboard/core';
+import injectedModule from '@web3-onboard/injected-wallets';
+import luksoModule from '@lukso/web3-onboard-config';
+import { ConnectModalOptions } from '@web3-onboard/core/dist/types';
 
-const lukso = luksoModule()
+const lukso = luksoModule();
 
 const injected = injectedModule({
   custom: [lukso],
-  sort: wallets => {
+  sort: (wallets) => {
     const sorted = wallets.reduce<any[]>((sorted, wallet) => {
       if (wallet.label === 'Universal Profiles') {
-        sorted.unshift(wallet)
+        sorted.unshift(wallet);
       } else {
-        sorted.push(wallet)
+        sorted.push(wallet);
       }
-      return sorted
-    }, [])
-    return sorted
+      return sorted;
+    }, []);
+    return sorted;
   },
   displayUnavailable: ['Universal Profiles'],
-})
+});
 
-const wallets = [injected]
+const wallets = [injected];
 
 const chains = [
   {
@@ -36,7 +36,7 @@ const chains = [
     label: 'LUKSO Testnet',
     rpcUrl: 'https://rpc.testnet.lukso.network',
   },
-]
+];
 
 const LuksoIcon = `<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 viewBox="0 0 550 604" style="enable-background:new 0 0 550 604;" xml:space="preserve">
@@ -48,7 +48,7 @@ C420.6,294.4,420.6,309.6,413.5,322z"/>
 <path fill="#FFF1F8" d="M413.5,322l-51.9,89.9c-7.1,12.4-20.3,20-34.6,20H223.1c-14.3,0-27.5-7.6-34.6-20L136.5,322
 c-7.1-12.4-7.1-27.6,0-40l51.9-89.9c7.1-12.4,20.3-20,34.6-20h103.8c14.3,0,27.5,7.6,34.6,20l51.9,89.9
 C420.6,294.4,420.6,309.6,413.5,322z"/>
-</svg>`
+</svg>`;
 
 const appMetadata = {
   name: 'Lukso Test dApp',
@@ -61,15 +61,15 @@ const appMetadata = {
       url: 'https://chrome.google.com/webstore/detail/universal-profiles/abpickdkkbnbcoepogfhkhennhfhehfn?hl=en',
     },
   ],
-}
+};
 
 const connect: ConnectModalOptions = {
   iDontHaveAWalletLink:
     'https://chrome.google.com/webstore/detail/universal-profiles/abpickdkkbnbcoepogfhkhennhfhehfn?hl=en',
   removeWhereIsMyWalletWarning: true,
-}
+};
 
-let onboard: OnboardAPI
+let onboard: OnboardAPI;
 
 const setupWeb3Onboard = async () => {
   onboard = Onboard({
@@ -77,24 +77,24 @@ const setupWeb3Onboard = async () => {
     chains,
     appMetadata,
     connect,
-  })
-  const connectedWallets = await onboard.connectWallet()
-  return connectedWallets[0]
-}
+  });
+  const connectedWallets = await onboard.connectWallet();
+  return connectedWallets[0];
+};
 
 const disconnect = async (): Promise<void> => {
-  const [primaryWallet] = onboard.state.get().wallets
-  await onboard.disconnectWallet({ label: primaryWallet.label })
-}
+  const [primaryWallet] = onboard.state.get().wallets;
+  await onboard.disconnectWallet({ label: primaryWallet.label });
+};
 
 const setChainId = async (chainHex: string): Promise<void> => {
-  await onboard.setChain({ chainId: chainHex })
-}
+  await onboard.setChain({ chainId: chainHex });
+};
 
 export default function useWeb3Onboard() {
   return {
     disconnect,
     setChainId,
     setupWeb3Onboard,
-  }
+  };
 }

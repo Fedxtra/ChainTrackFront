@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { UserData } from '@/helper/types';
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 
 interface UserCardProps {
   userData: UserData;
@@ -28,16 +28,12 @@ const UserCard = ({ userData }: UserCardProps) => {
       />
       <CardContent>
         <Grid container flexDirection="column" gap="12px">
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Followers: {userData?.followerCount ?? 0}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Following: {userData?.followingCount ?? 0}
-            </Typography>
-          </Box>
+          <Typography variant="body1" color="text.secondary">
+            Followers: {userData?.followerCount ?? 0}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Following: {userData?.followingCount ?? 0}
+          </Typography>
         </Grid>
       </CardContent>
     </Card>

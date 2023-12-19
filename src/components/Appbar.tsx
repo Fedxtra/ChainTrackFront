@@ -9,23 +9,21 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Logo } from './Logo';
-import { useState } from 'react';
-import {
-  ALERTS_ROUTE,
-  HOME_ROUTE,
-  POPULAR_ROUTE,
-  TRANSACTIONS_ROUTE,
-} from '@/helper/routes';
+import { useCallback, useEffect, useState } from 'react';
+import { ALERTS_ROUTE, HOME_ROUTE, TRANSACTIONS_ROUTE } from '@/helper/routes';
 import { useRouter } from 'next/navigation';
 import { ToggleTheme } from '@/components/ToggleTheme';
 import auth from '@/app/auth';
 import useStore from '@/helper/store';
+import { UserData } from '@/helper/types';
+import { getProfileMetadata } from '@/api';
+import apiService from '@/api/api';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
 
 const pages = [
   {
-    name: 'Popular',
-    link: POPULAR_ROUTE,
-  }, {
     name: 'Transactions',
     link: TRANSACTIONS_ROUTE,
   },
@@ -39,33 +37,45 @@ export default function MainAppBar() {
   const { setState } = useStore();
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const [walletSigned, setWalletSigned] = useState<boolean>(false);
-  const [address, setAddress] = useState<string|null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserData>();
   const router = useRouter();
 
-  async function connect(){
+  async function connect() {
     const address = await auth.connect();
     setWalletConnected(true);
     setAddress(address);
     setState({
       address: address,
-      connected: true
+      connected: true,
     });
   }
 
-  async function sign(){
+  async function sign() {
     if (!walletConnected) {
       throw new Error('Wallet not connected');
     }
     if (address === null) {
-        throw new Error('Address not set');
+      throw new Error('Address not set');
     }
     setWalletSigned(await auth.sign(address));
     setState('signed', true);
   }
 
+  const loadCurrentUserData = useCallback(async () => {
+    const newCurrentUserData = await apiService.readUser('1');
+    const currentUserWithMetadata =
+      await getProfileMetadata(newCurrentUserData);
+    setCurrentUser(currentUserWithMetadata);
+  }, []);
+
+  useEffect(() => {
+    loadCurrentUserData();
+  }, [loadCurrentUserData]);
+
   return (
     <AppBar position="static">
-      <Box paddingLeft="1.2rem" paddingRight="1.2rem">
+      <Box>
         <Toolbar disableGutters>
           <Button
             variant="contained"
@@ -103,20 +113,21 @@ export default function MainAppBar() {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }} display="flex" gap="12px">
+          <Box
+            sx={{ flexGrow: 0 }}
+            display="flex"
+            gap="12px"
+            alignItems="center"
+          >
             <ToggleTheme />
-            {
-              walletSigned ? (
-                <Tooltip title="Signed">
-                  <Button
-                    color="secondary"
-                    variant="contained"
-                  >
-                    {' '}
-                    Signed{' '}
-                  </Button>
-                </Tooltip>
-              ) : (walletConnected ? (
+            {walletSigned ? (
+              <Tooltip title="Signed">
+                <Button color="secondary" variant="contained">
+                  {' '}
+                  Signed{' '}
+                </Button>
+              </Tooltip>
+            ) : walletConnected ? (
               <Tooltip title="Sign">
                 <Button
                   color="secondary"
@@ -138,7 +149,34 @@ export default function MainAppBar() {
                   Connect{' '}
                 </Button>
               </Tooltip>
-            ))}
+            )}
+            <Card className="current-user-avatar">
+              <CardHeader
+                avatar={
+                  <Avatar
+                    src={currentUser?.profileImageUrl}
+                    alt="Profile image"
+                    sx={{ width: 56, height: 56 }}
+                  >
+                    {currentUser &&
+                      !currentUser.profileImageUrl &&
+                      currentUser.name &&
+                      currentUser.name[0].toUpperCase()}
+                  </Avatar>
+                }
+                title={currentUser?.name ?? '-'}
+                subheader={
+                  <div>
+                    <Typography variant="body2">
+                      Followers: {currentUser?.followerCount ?? 0}
+                    </Typography>
+                    <Typography variant="body2">
+                      Following: {currentUser?.followingCount ?? 0}
+                    </Typography>
+                  </div>
+                }
+              />
+            </Card>
           </Box>
         </Toolbar>
       </Box>

@@ -1,4 +1,4 @@
-import {User} from "@/api/api";
+import { User } from '@/api/api';
 
 export interface UserData extends User {
   profileImageUrl?: string;

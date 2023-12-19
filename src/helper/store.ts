@@ -35,9 +35,8 @@ export const useStore = () => {
         return;
       }
       setAppContext((prev) => ({ ...prev, [key]: value }));
-    }
+    },
   };
 };
 
 export default useStore;
-

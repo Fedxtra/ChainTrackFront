@@ -1,10 +1,10 @@
 'use client';
 
-import React, {useCallback, useEffect, useState} from 'react';
-import apiService, {Transaction} from "@/api/api";
-import useThrowAsyncError from "@/helper/errorHandler";
-import {Box, CircularProgress, Grid, useTheme} from "@mui/material";
-import TransactionCard from "@/components/TransactionCard";
+import React, { useCallback, useEffect, useState } from 'react';
+import apiService, { Transaction } from '@/api/api';
+import useThrowAsyncError from '@/helper/errorHandler';
+import { Box, CircularProgress, Grid } from '@mui/material';
+import TransactionCard from '@/components/TransactionCard';
 
 const TransactionsPage = () => {
   const throwAsyncError = useThrowAsyncError();
@@ -13,8 +13,19 @@ const TransactionsPage = () => {
   const loadTransactionsData = useCallback(async () => {
     try {
       const usersTransactions = await apiService.readRecurringTransactions();
-      const newTransactions = await Promise.all(usersTransactions.map((userTransactions) => apiService.readRecurringTransaction(userTransactions.recurringTransactionId)));
-      setTransactions(newTransactions.map((newTransactions, index) => ({ ...newTransactions, ...(usersTransactions[index] || {}) })));
+      const newTransactions = await Promise.all(
+        usersTransactions.map((userTransactions) =>
+          apiService.readRecurringTransaction(
+            userTransactions.recurringTransactionId,
+          ),
+        ),
+      );
+      setTransactions(
+        newTransactions.map((newTransactions, index) => ({
+          ...newTransactions,
+          ...(usersTransactions[index] || {}),
+        })),
+      );
     } catch (err) {
       throwAsyncError(err);
     }
@@ -26,14 +37,20 @@ const TransactionsPage = () => {
   }, [loadTransactionsData]);
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={3}>
       <Grid item xs={12}>
         <Box>
           {transactions.length ? (
             <Box display="flex" gap="1.2rem" flexDirection="column">
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {transactions.map((transaction) => (
-                  <Grid item xs={3} key={JSON.stringify(transaction)}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    lg={4}
+                    key={transaction.id || transaction.recurringTransactionId}
+                  >
                     <TransactionCard transaction={transaction} />
                   </Grid>
                 ))}
