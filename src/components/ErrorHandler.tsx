@@ -77,7 +77,7 @@ class ErrorHandler extends React.Component<
                 </IconButton>
               }
             >
-              <Typography variant="h4">
+              <Typography variant="h5">
                 <b>An error happened:</b>{' '}
                 {this.state.errorMessage || appContext.errorMessage}
               </Typography>

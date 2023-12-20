@@ -170,8 +170,8 @@ class API {
     return {
       id,
       address: '0x81C8fA3745Cec646C55e3dcfa5989707a7Ade03F',
-      followerCount: 0,
-      followingCount: 0,
+      followerCount: 100,
+      followingCount: 200,
       recurringTransactions: [],
       contacts: [],
       alerts: [],

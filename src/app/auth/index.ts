@@ -10,11 +10,15 @@ import EthereumProvider from '@walletconnect/ethereum-provider/dist/types/Ethere
 class Auth {
   web3?: Web3;
 
-  async connect(): Promise<string> {
+  async connect(): Promise<string | undefined> {
     const web3Onboard = useWeb3Onboard();
     const primaryWallet =
       (await web3Onboard.setupWeb3Onboard()) as EthereumProvider;
     console.log('primaryWallet', primaryWallet);
+    if (!primaryWallet) {
+      return;
+    }
+
     this.web3 = new Web3(primaryWallet.provider);
     window.web3 = this.web3;
 

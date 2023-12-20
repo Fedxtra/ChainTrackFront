@@ -21,6 +21,14 @@ import apiService from '@/api/api';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const pages = [
   {
@@ -34,24 +42,32 @@ const pages = [
 ];
 
 export default function MainAppBar() {
+  const theme = useTheme();
+  const screenLessThanMedium = useMediaQuery(theme.breakpoints.down('md'));
   const { setState } = useStore();
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const [walletSigned, setWalletSigned] = useState<boolean>(false);
   const [address, setAddress] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserData>();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const router = useRouter();
 
-  async function connect() {
+  const connect = useCallback(async () => {
     const address = await auth.connect();
+    if (typeof address === 'undefined') {
+      return;
+    }
+
     setWalletConnected(true);
     setAddress(address);
     setState({
       address: address,
       connected: true,
     });
-  }
+  }, [setState]);
 
-  async function sign() {
+  const sign = useCallback(async () => {
     if (!walletConnected) {
       throw new Error('Wallet not connected');
     }
@@ -60,7 +76,7 @@ export default function MainAppBar() {
     }
     setWalletSigned(await auth.sign(address));
     setState('signed', true);
-  }
+  }, [address, setState, walletConnected]);
 
   const loadCurrentUserData = useCallback(async () => {
     const newCurrentUserData = await apiService.readUser('1');
@@ -73,44 +89,81 @@ export default function MainAppBar() {
     loadCurrentUserData();
   }, [loadCurrentUserData]);
 
+  const AuthComponent = useCallback(() => {
+    if (walletSigned) {
+      return (
+        <Tooltip title="Signed">
+          <Button color="secondary" variant="contained">
+            {' '}
+            Signed{' '}
+          </Button>
+        </Tooltip>
+      );
+    }
+
+    if (walletConnected) {
+      return (
+        <Tooltip title="Sign">
+          <Button color="secondary" variant="contained" onClick={() => sign()}>
+            {' '}
+            Sign{' '}
+          </Button>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Tooltip title="Connect">
+        <Button color="secondary" variant="contained" onClick={() => connect()}>
+          {' '}
+          Connect{' '}
+        </Button>
+      </Tooltip>
+    );
+  }, [connect, sign, walletConnected, walletSigned]);
+
   return (
-    <AppBar position="static">
+    <AppBar position="relative">
       <Box>
         <Toolbar disableGutters>
-          <Button
-            variant="contained"
-            onClick={() => router.push(`/${HOME_ROUTE}`)}
-            className="logo-navigation-button"
-          >
-            <Box display="flex" alignItems="center">
-              <Logo size={70} />
-            </Box>
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              sx={{
-                mr: 2,
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-              }}
+          <Box display="flex" flexGrow="1" alignItems="center">
+            <Button
+              variant="contained"
+              onClick={() => router.push(`/${HOME_ROUTE}`)}
+              className="logo-navigation-button"
             >
-              ChainTrack
-            </Typography>
-          </Button>
-
-          <Box sx={{ flexGrow: 1, display: 'flex' }}>
-            {pages.map((page) => (
-              <Button
-                key={JSON.stringify(page)}
-                onClick={() => router.push(`/${page.link}`)}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+              <Box display="flex" alignItems="center">
+                <Logo size={70} />
+              </Box>
+              <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                sx={{
+                  mr: 2,
+                  fontWeight: 700,
+                  letterSpacing: '.3rem',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                }}
               >
-                {page.name}
-              </Button>
-            ))}
+                ChainTrack
+              </Typography>
+            </Button>
+
+            {!screenLessThanMedium && (
+              <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                {pages.map((page) => (
+                  <Button
+                    key={JSON.stringify(page)}
+                    onClick={() => router.push(`/${page.link}`)}
+                    sx={{ my: 2, color: 'white', display: 'block' }}
+                  >
+                    {page.name}
+                  </Button>
+                ))}
+              </Box>
+            )}
           </Box>
 
           <Box
@@ -119,64 +172,117 @@ export default function MainAppBar() {
             gap="12px"
             alignItems="center"
           >
-            <ToggleTheme />
-            {walletSigned ? (
-              <Tooltip title="Signed">
-                <Button color="secondary" variant="contained">
-                  {' '}
-                  Signed{' '}
-                </Button>
-              </Tooltip>
-            ) : walletConnected ? (
-              <Tooltip title="Sign">
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => sign()}
+            {screenLessThanMedium ? (
+              <>
+                <IconButton
+                  size="large"
+                  onClick={(event) => setAnchorEl(event?.currentTarget)}
                 >
-                  {' '}
-                  Sign{' '}
-                </Button>
-              </Tooltip>
-            ) : (
-              <Tooltip title="Connect">
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => connect()}
+                  <MenuIcon fontSize="large" />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={() => setAnchorEl(null)}
+                  className="navigation-menu"
                 >
-                  {' '}
-                  Connect{' '}
-                </Button>
-              </Tooltip>
-            )}
-            <Card className="current-user-avatar">
-              <CardHeader
-                avatar={
-                  <Avatar
-                    src={currentUser?.profileImageUrl}
-                    alt="Profile image"
-                    sx={{ width: 56, height: 56 }}
+                  <MenuItem
+                    sx={{
+                      '&:hover': {
+                        cursor: 'default',
+                        backgroundColor: 'inherit',
+                      },
+                    }}
+                    divider
                   >
-                    {currentUser &&
-                      !currentUser.profileImageUrl &&
-                      currentUser.name &&
-                      currentUser.name[0].toUpperCase()}
-                  </Avatar>
-                }
-                title={currentUser?.name ?? '-'}
-                subheader={
-                  <div>
-                    <Typography variant="body2">
-                      Followers: {currentUser?.followerCount ?? 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      Following: {currentUser?.followingCount ?? 0}
-                    </Typography>
-                  </div>
-                }
-              />
-            </Card>
+                    <Box
+                      gap="12px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      flexGrow="1"
+                    >
+                      <Card className="current-user-avatar">
+                        <CardHeader
+                          avatar={
+                            <Avatar
+                              src={currentUser?.profileImageUrl}
+                              alt="Profile image"
+                              sx={{ width: 56, height: 56 }}
+                            >
+                              {currentUser &&
+                                !currentUser.profileImageUrl &&
+                                currentUser.name &&
+                                currentUser.name[0].toUpperCase()}
+                            </Avatar>
+                          }
+                          title={currentUser?.name ?? '-'}
+                        />
+                      </Card>
+                      <Box display="flex" gap="12px">
+                        <ToggleTheme />
+                        <AuthComponent />
+                      </Box>
+                    </Box>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      router.push(`/${HOME_ROUTE}`);
+                      setAnchorEl(null);
+                    }}
+                    divider
+                    sx={{ fontSize: '2rem' }}
+                  >
+                    Home
+                  </MenuItem>
+                  {pages.map((page) => (
+                    <MenuItem
+                      key={JSON.stringify(page)}
+                      onClick={() => {
+                        router.push(`/${page.link}`);
+                        setAnchorEl(null);
+                      }}
+                      divider
+                      sx={{ fontSize: '2rem' }}
+                    >
+                      {page.name}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            ) : (
+              <>
+                <ToggleTheme />
+                <AuthComponent />
+                <Card className="current-user-avatar">
+                  <CardHeader
+                    avatar={
+                      <Avatar
+                        src={currentUser?.profileImageUrl}
+                        alt="Profile image"
+                        sx={{ width: 56, height: 56 }}
+                      >
+                        {currentUser &&
+                          !currentUser.profileImageUrl &&
+                          currentUser.name &&
+                          currentUser.name[0].toUpperCase()}
+                      </Avatar>
+                    }
+                    title={currentUser?.name ?? '-'}
+                    subheader={
+                      <div>
+                        <Typography variant="body2">
+                          Followers: {currentUser?.followerCount ?? 0}
+                        </Typography>
+                        <Typography variant="body2">
+                          Following: {currentUser?.followingCount ?? 0}
+                        </Typography>
+                      </div>
+                    }
+                  />
+                </Card>
+              </>
+            )}
           </Box>
         </Toolbar>
       </Box>
