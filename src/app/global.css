@@ -1,0 +1,27 @@
+.MuiButtonBase-root.logo-navigation-button {
+    box-shadow: none;
+    background-color: transparent;
+
+    &:hover {
+        box-shadow: none;
+        background-color: inherit;
+    }
+}
+
+.current-user-avatar {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+.navigation-menu {
+    ul.MuiMenu-list {
+        padding: 0;
+    }
+
+    div.MuiMenu-paper {
+        width: 100%;
+        left: 0 !important;
+        max-width: none;
+    }
+}

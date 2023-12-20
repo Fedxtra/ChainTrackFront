@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "next",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:prettier/recommended",
+    "eslint:recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "prettier/prettier": ["error", { "singleQuote": true }]
+  }
+}
